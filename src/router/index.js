@@ -62,8 +62,19 @@ export default new VueRouter({
                     path: 'customerOrder',
                     component: CustomerOrder,
                 },
-               
+
             ],
         },
-    ]
+        {
+            path: '/',
+            name: 'Dashboard',
+            component: Dashboard,
+            children: [
+                {
+                    path: 'customer_order',
+                    name: 'CustomerOrder',
+                    component: CustomerOrder,
+                },
+            ],
+        },],
 })

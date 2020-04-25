@@ -47,7 +47,7 @@ props: {
     //  getChildProducts => getProducts
     //  emit 用來傳遞 getChildProducts 的參數至 products 的 getProducts
     getChildProducts(page) {
-      this.$emit("test", page);
+      this.$emit("emitPagination", page);
     }
   }
 };

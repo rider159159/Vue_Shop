@@ -17,6 +17,7 @@ import currencyFilter from './filter/currency'
 import dateFilter from './filter/date'
 
 Vue.use(VueAxios, axios)
+// 全域啟用元件
 Vue.component('Loading',Loading)
 //註冊filter，filter('自訂名稱'，元件) 
 Vue.filter('currency',currencyFilter)

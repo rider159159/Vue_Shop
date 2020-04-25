@@ -1,10 +1,9 @@
 <template>
   <div>
-    <!-- <loading :active.sync="isLoading"></loading> -->
     <div class="text-right mt-4">
-      <!-- Button trigger modal -->
       <button class="btn btn-primary" @click="openCoupons(true)">建立新優惠券</button>
     </div>
+    <!-- 優惠卷列表，優惠卷資料由 建立新優惠券 的 函式來的-->
     <table class="table mt-4">
       <thead>
         <tr>
@@ -35,8 +34,7 @@
     </table>
     <Pagination v-bind:childPaginations="pagination" @changeCurrentPage="getCoupons"></Pagination>
 
-    <!-- 分頁 -->
-    <!-- 新增/修改 Modal -->
+    <!-- 建立優惠卷的 modal -->
     <div
       class="modal fade"
       id="couponModal"
@@ -111,7 +109,7 @@
         </div>
       </div>
     </div>
-    <!-- 刪除 Modal" -->
+    <!-- 刪除優惠卷的 Modal" -->
     <div
       class="modal fade"
       id="delCouponModal"
@@ -159,7 +157,7 @@ export default {
     };
   },
   methods: {
-    // init 優惠卷
+    // 獲得優惠卷資料，init
     getCoupons(page = 1) {
       const vm = this;
       const api = `${process.env.APIPATH}api/${process.env.CUSTOMPATH}/admin/coupons?page=${page}`;
@@ -181,7 +179,7 @@ export default {
         this.tempCoupon = Object.assign({}, item);
         console.log(this.tempCoupon);
         this.isNew = false;
-        //  將時間戳轉換成 年+月+日
+        //  將時間戳轉換成 年+月+日 ，ISO 格是可以反過來顯示在 HTML input 上
         const dateAndTime = new Date(vm.tempCoupon.now_date * 1000)
           .toISOString()
           .split("T");
@@ -190,12 +188,12 @@ export default {
       }
       $("#couponModal").modal("show");
     },
-    // 確認優惠
+    // 確認建立優惠卷
     updateCoupon() {
-      //true =上傳
       let api = `${process.env.APIPATH}api/${process.env.CUSTOMPATH}/admin/coupon`;
       const vm = this;
       let httpMethod = "post";
+      //true =新增 ，false =修改
       if (!vm.isNew) {
         api = `${process.env.APIPATH}api/${process.env.CUSTOMPATH}/admin/coupon/${vm.tempCoupon.id}`;
         httpMethod = "put";
@@ -212,11 +210,12 @@ export default {
         }
       });
     },
+    // 點擊刪除優惠卷
     openDelCoupon(item) {
       this.tempCoupon = item;
       $("#delCouponModal").modal("show");
     },
-    // 刪除優惠卷
+    // 確任刪除優惠卷
     deleteCoupon() {
       const vm = this;
       const api = `${process.env.APIPATH}api/${process.env.CUSTOMPATH}/admin/coupon/${vm.tempCoupon.id}`;

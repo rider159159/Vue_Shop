@@ -4,6 +4,7 @@
     <div class="text-right mt-4">
       <button class="btn-primary btn" @click="openModel(true)">建新的產品</button>
     </div>
+   <!-- 商品列表 -->
     <table class="table mt-4">
       <thead>
         <tr>
@@ -33,9 +34,9 @@
       </tbody>
     </table>
     <!-- v-bind 配合 props ，v-on 配合 emit -->
-    <Pagination v-bind:childPaginations="pagination" v-on:test="getProducts"></Pagination>
+    <Pagination v-bind:childPaginations="pagination" v-on:emitPagination="getProducts"></Pagination>
 
-    <!--編輯 Modal -->
+    <!--編輯、新增商品的 Modal -->
     <div
       class="modal fade"
       id="productsModal"
@@ -190,7 +191,7 @@
         </div>
       </div>
     </div>
-    <!-- 刪除 Modal -->
+    <!-- 刪除 商品的 Modal -->
     <div
       class="modal fade"
       id="delProductModal"
@@ -211,7 +212,7 @@
           </div>
           <div class="modal-body">
             是否刪除
-            <strong class="text-danger"></strong> 商品(刪除後將無法恢復)。
+            <strong class="text-danger">{{tempProduct.title}}</strong> 商品(刪除後將無法恢復)。
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
@@ -223,6 +224,7 @@
   </div>
 </template> 
 <script>
+// jQ 不建議用全局註冊
 import $ from "jquery";
 import Pagination from "../Pagination";
 
@@ -247,7 +249,6 @@ export default {
     // 獲得遠端資料，透過 creat 鉤子觸發
     // 參數預設值，若參數沒有值就使用 1，就是預設開啟後，會在第一頁，這邊 page 主要是交給 api 中網址的變數
     getProducts(page = 1) {
-      console.log(page);
       const api = `${process.env.APIPATH}api/${process.env.CUSTOMPATH}/admin/products?page=${page}`;
       const vm = this;
       //api 讀取時跑出 loading 圖片，api 讀取完畢不顯示
@@ -259,6 +260,7 @@ export default {
         vm.isLoading = false;
         vm.pagination = response.data.pagination;
       });
+      
     },
     // 新增產品、修改產品的確任鍵
     updataProduct() {
