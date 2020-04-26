@@ -47,8 +47,9 @@
     <!-- <Pagination v-bind:childPaginations="pagination" v-on:emitPagination="getProducts"></Pagination> -->
 
     <!-- 購物車表單 -->
-    <div class="row justify-content-center mt-4 d-flex" v-if="cart.carts.length <= 0">
-      <table class="table mt-4" >
+    <!-- 購物資訊長度 小於/等於 零 時隱藏 此表單 -->
+    <div class="row justify-content-center mt-4 d-flex" v-if="cart.carts.length !==0">
+      <table class="table mt-4">
         <thead>
           <tr>
             <th></th>
@@ -167,6 +168,7 @@
           </div>
           <div class="modal-body">
             是否刪除
+            <!-- 無法直接使用 {{tempCart.product.title}} -->
             <strong class="text-danger">{{test}}</strong> 商品(刪除後將無法恢復)。
           </div>
           <div class="modal-footer">
@@ -245,15 +247,18 @@ export default {
       vm.isLoading = true;
       this.$http.get(api).then(response => {
         vm.isLoading = false;
-        vm.cart = response.data.data;
+        this.$set(vm,'cart', response.data.data)
+        // vm.cart = response.data.data;
         console.log(vm.cart);
       });
     },
     // 開啟刪除 Modal
     openDelModal(item) {
       this.tempCart = Object.assign({}, item);
+              this.$set(this,'tempCart', item)
+
+      console.log(this.tempCart.product.title);
       this.test = this.tempCart.product.title;
-      console.log(item);
       $("#delCartModal").modal("show");
     },
     // 確認刪除
