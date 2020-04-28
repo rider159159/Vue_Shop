@@ -7,6 +7,7 @@ import Products from '@/components/pages/Products'
 import Coupons from '@/components/pages/Coupons'
 import Orders from '@/components/pages/Orders'
 import CustomerOrder from '@/components/pages/CustomerOrder'
+import CustomerCheckOrder from '@/components/pages/CustomerCheckOrder'
 Vue.use(VueRouter)
 // 匯出給 main.js 使用
 export default new VueRouter({
@@ -74,6 +75,12 @@ export default new VueRouter({
                     path: 'customer_order',
                     name: 'CustomerOrder',
                     component: CustomerOrder,
+                },
+                {
+                    // 動態路由 76 章有講解
+                    path: 'customer_checkorder/:orderId',
+                    name: 'CustomerCheckOrder',
+                    component: CustomerCheckOrder,
                 },
             ],
         },],

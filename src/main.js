@@ -7,6 +7,8 @@ import VueAxios from 'vue-axios'
 //下面兩隻都是 vue-loading ，第二個是 css
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+import VeeValidate from 'vee-validate'
+import zhTW_Validate from '../node_modules/vee-validate/dist/locale/zh_TW'
 // 單純引入 bootstrap ，有要使用有 jQ 功能的 BS 才要載入
 import "bootstrap"
 import App from './App'
@@ -17,12 +19,14 @@ import currencyFilter from './filter/currency'
 import dateFilter from './filter/date'
 
 Vue.use(VueAxios, axios)
+Vue.use(VeeValidate)
+
 // 全域啟用元件
 Vue.component('Loading',Loading)
 //註冊filter，filter('自訂名稱'，元件) 
 Vue.filter('currency',currencyFilter)
 Vue.filter('date',dateFilter)
-
+VeeValidate.Validator.localize('zh_TW',zhTW_Validate)
 /* eslint-disable no-new */
 axios.defaults.withCredentials = true
 new Vue({

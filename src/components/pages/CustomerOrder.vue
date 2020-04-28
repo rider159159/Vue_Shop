@@ -48,7 +48,7 @@
 
     <!-- 購物車表單 -->
     <!-- 購物資訊長度 小於/等於 零 時隱藏 此表單 -->
-    <div class="row justify-content-center mt-4 d-flex" v-if="cart.carts.length !==0">
+    <div class="row justify-content-center mt-4 d-flex" v-if="cart.carts.length!==0">
       <table class="table mt-4">
         <thead>
           <tr>
@@ -90,6 +90,78 @@
         <div class="input-group-append">
           <button class="btn btn-outline-secondary" type="button" @click="addCouponCode">套用優惠卷</button>
         </div>
+      </div>
+      <!-- 送出表單 -->
+      <div class="my-5 row justify-content-center">
+        <form class="col-md-12" @submit.prevent="createOrder">
+          <div class="form-group">
+            <label for="useremail">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              name="email"
+              id="useremail"
+              v-model="form.user.email"
+              placeholder="請輸入 Email"
+              v-validate="'required|email'"
+            />
+            <span class="text-danger" v-if="errors.has('email')">{{errors.first('email')}}</span>
+          </div>
+
+          <div class="form-group">
+            <label for="username">收件人姓名</label>
+            <input
+              type="text"
+              class="form-control"
+              name="name"
+              id="username"
+              v-model="form.user.name"
+              v-validate="'required'"
+              placeholder="輸入姓名"
+              :class="{'is-invalid':errors.has('name')}"
+            />
+            <span class="text-danger" v-if="errors.has('name')">姓名需輸入</span>
+          </div>
+
+          <div class="form-group">
+            <label for="usertel">收件人電話</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="usertel"
+              v-model="form.user.tel"
+              placeholder="請輸入電話"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="useraddress">收件人地址</label>
+            <input
+              type="text"
+              class="form-control"
+              name="address"
+              id="useraddress"
+              v-model="form.user.address"
+              placeholder="請輸入地址"
+            />
+            <span class="text-danger">地址欄位不得留空</span>
+          </div>
+
+          <div class="form-group">
+            <label for="comment">留言</label>
+            <textarea
+              name
+              id="comment"
+              class="form-control"
+              cols="30"
+              rows="10"
+              v-model="form.message"
+            ></textarea>
+          </div>
+          <div class="text-right">
+            <button class="btn btn-danger">送出訂單</button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -169,7 +241,7 @@
           <div class="modal-body">
             是否刪除
             <!-- 無法直接使用 {{tempCart.product.title}} -->
-            <strong class="text-danger">{{test}}</strong> 商品(刪除後將無法恢復)。
+            <strong class="text-danger">{{tempCart.product.title}}</strong> 商品(刪除後將無法恢復)。
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
@@ -191,12 +263,27 @@ export default {
       isLoading: false,
       pagination: {},
       product: {},
-      cart: {},
-      test: "",
-      tempCart: {},
+      cart: {
+        carts: {}
+      },
+
+      tempCart: {
+        product: {
+          title: ""
+        }
+      },
       coupon_code: "",
       status: {
         loadingItem: "" //存放的值就是產品 id
+      },
+      form: {
+        user: {
+          name: "",
+          email: "",
+          tel: "",
+          address: ""
+        },
+        message: ""
       }
     };
   },
@@ -237,25 +324,25 @@ export default {
         console.log(response);
         vm.status.loadingItem = ""; // 判斷目前畫面上是哪一個元素正在讀取中
         $("#productModal").modal("hide");
-        this.creatCard(); //加到購物車後要從新讀取購物車資料
+        this.getOrder(); //加到購物車後要從新讀取購物車資料
       });
     },
     // 獲得購物車商品的資料
-    creatCard() {
+    getOrder() {
       const api = `${process.env.APIPATH}api/${process.env.CUSTOMPATH}/cart`;
       const vm = this;
       vm.isLoading = true;
       this.$http.get(api).then(response => {
         vm.isLoading = false;
-        this.$set(vm,'cart', response.data.data)
-        // vm.cart = response.data.data;
+        // this.$set(vm, "cart", response.data.data);
+        vm.cart = response.data.data;
         console.log(vm.cart);
       });
     },
     // 開啟刪除 Modal
     openDelModal(item) {
       this.tempCart = Object.assign({}, item);
-              this.$set(this,'tempCart', item)
+      this.$set(this, "tempCart", item);
 
       console.log(this.tempCart.product.title);
       this.test = this.tempCart.product.title;
@@ -270,7 +357,7 @@ export default {
       this.$http.delete(api).then(response => {
         console.log(response);
         $("#delCartModal").modal("hide");
-        this.creatCard();
+        this.getOrder();
       });
     },
     // 套用優惠卷
@@ -284,12 +371,34 @@ export default {
       const api = `${process.env.APIPATH}api/${process.env.CUSTOMPATH}/coupon`;
       this.$http.post(api, { data: coupon }).then(response => {
         console.log(response);
+        this.getOrder();
+      });
+    },
+    // 送出購物訂單
+    createOrder() {
+      const vm = this;
+      const order = vm.form;
+      // vm.isLoading = true;
+      const api = `${process.env.APIPATH}api/${process.env.CUSTOMPATH}/order`;
+      this.$validator.validate().then(result => {
+        if (result) {
+          this.$http.post(api, { data: order }).then(response => {
+            console.log("訂單建立", response);
+            // 回傳訊息正確，跳轉至購物完成頁面
+            if (response.data.success) {
+              vm.$router.push(`/customer_checkorder/${response.data.orderId}`);
+            }
+            vm.isLoading = false;
+          });
+        } else {
+          console.log("欄位不完整");
+        }
       });
     }
   },
   created() {
     this.getProducts();
-    this.creatCard();
+    this.getOrder();
     this.$bus.$emit("message:push", "created 的訊息", "success");
   },
   components: {
