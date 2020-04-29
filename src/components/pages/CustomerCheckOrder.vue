@@ -90,7 +90,7 @@ export default {
           vm.getOrder()
         }
         vm.isLoading = false;
-      });
+      })
     }
   },
   created() {
@@ -99,5 +99,5 @@ export default {
     this.getOrder();
     console.log(this.orderId);
   }
-};
+}
 </script>

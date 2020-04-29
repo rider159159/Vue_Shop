@@ -9,6 +9,7 @@ module.exports = {
 
     // Paths
     assetsSubDirectory: 'static',
+    // 編譯後路徑調整
     assetsPublicPath: '/',
     proxyTable: {},
 
